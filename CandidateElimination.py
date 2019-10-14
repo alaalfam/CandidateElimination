@@ -16,13 +16,18 @@ class CandidateElimination:
 
     def start_calculate(self):
         print(self.table)
-        print("S0 = ", self.s)
-        print("g0 = ", self.g)
+        self.print_s_and_g(0)
         for i in range(self.n):
             if self.is_positive(i):
                 self.do_action_for_positive(i)
             else:
                 self.do_action_for_negative(i)
+            self.print_s_and_g(i + 1)
+
+    def print_s_and_g(self, i):
+        print("S ", i, " =", self.s)
+        print("G ", i, " =", self.g)
+        print()
 
     def is_positive(self, raw):
         if self.table[raw][len(self.table[0]) - 1] == "yes":
@@ -33,9 +38,6 @@ class CandidateElimination:
     def do_action_for_positive(self, raw):
         self.generate_s(raw)
         self.clean_g()
-        print("S = ", self.s)
-        print("G = ", self.g)
-        print()
 
     def clean_g(self):
         i = 0
@@ -56,9 +58,6 @@ class CandidateElimination:
 
     def do_action_for_negative(self, raw):
         self.generate_g(raw)
-        print("S = ", self.s)
-        print("G = ", self.g)
-        print()
 
     def generate_g(self, raw):
         change = False
@@ -80,7 +79,7 @@ class CandidateElimination:
                     break
                 elif self.s[j] == self.table[raw][j] and self.g[i][j] == self.table[raw][j]:
                     break
-                elif self.not_contradiction(self.g[i], self.table[raw]):
+                elif self.not_contradiction(self.g[i], self.table[raw]) and self.not_dont_care(self.g[i]):
                     g.append(self.g[i])
                     change = True
                     break
@@ -92,7 +91,12 @@ class CandidateElimination:
         new_g = []
         for i in range(j):
             new_g.append("?")
-        new_g.append(self.get_except(raw, j).pop())
+        except_arr = self.get_except(raw, j)
+        if self.s[j] == "?" or self.s[j] == "0":
+            while len(except_arr) > 0:
+                new_g.append(except_arr.pop())
+        else:
+            new_g.append(self.s[j])
         for i in range(j + 1, self.m - 1):
             new_g.append("?")
         return new_g
@@ -119,3 +123,9 @@ class CandidateElimination:
             if g[i] != "?":
                 return False
         return True
+
+    def not_dont_care(self, g):
+        for i in range(len(g)):
+            if g[i] != "?":
+                return True
+        return False
