@@ -64,20 +64,20 @@ class CandidateElimination:
         g = []
         for i in range(len(self.g)):
             for j in range(self.m - 1):  # TODO : debug
-                if self.s[j] != self.table[raw][j] and self.s[j] != "?" and self.g[i][j] != self.table[raw][
-                    j] and self.is_empty(self.g[i]):
-                    new_g = self.create_new_g(j, raw)
-                    g.append(new_g)
-                    change = True
-                elif self.s[j] != self.table[raw][j] and self.s[j] != "?" and self.g[i][j] == self.table[raw][j]:
-                    for k in range(0, self.m - 1):
-                        if k != j:
-                            new_g = self.create_new_g(k, raw)
-                            new_g[j] = self.g[i][j]
-                            g.append(new_g)
-                            change = True
-                    break
-                elif self.s[j] == self.table[raw][j] and self.g[i][j] == self.table[raw][j]:
+                if self.table[raw][j] != self.s[j] and self.s[j] != "?":
+                    if self.is_empty(self.g[i]):
+                        new_g = self.create_new_g(j, raw)
+                        g.append(new_g)
+                        change = True
+                    elif self.table[raw][j] == self.g[i][j]:
+                        for k in range(0, self.m - 1):
+                            if k != j:
+                                new_g = self.create_new_g(k, raw)
+                                new_g[j] = self.g[i][j]
+                                g.append(new_g)
+                                change = True
+                        break
+                elif self.table[raw][j] == self.s[j] and self.table[raw][j] == self.g[i][j]:
                     break
                 elif self.not_contradiction(self.g[i], self.table[raw]) and self.not_dont_care(self.g[i]):
                     g.append(self.g[i])
